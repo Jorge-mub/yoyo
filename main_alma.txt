@@ -1,0 +1,848 @@
+Private Sub UserForm_initialize()
+    Dim i As Integer, totalWidth As String
+    Dim j As Integer, totalWidth2 As String
+    Dim tabla
+    
+    'On Error Resume Next
+'       ---------MULTIPAGE1---------
+    With Me.MultiPage1
+        .MultiRow = True
+    End With
+
+'       ---------LISTBOX 1---------
+    With Me.ListBox1
+        .ColumnCount = 5
+        For i = 1 To ListBox1.ColumnCount
+            totalWidth = totalWidth & Sheets("Existencias").Columns(i).Width & ";"
+        Next i
+        .ColumnHeads = False
+        .TextAlign = fmTextAlignCenter
+        .Enabled = True
+    End With
+    
+    With Me.articulo
+        Dim celda As Range
+        Dim fin As Long
+        
+        fin = Exist.ListObjects("tabExistencias").ListRows.Count + 1
+        .Clear
+        
+        For Each celda In ThisWorkbook.Sheets("Existencias").Range("D2:D" & fin)
+            If Not IsEmpty(celda.Value) Then
+                .AddItem celda.Value
+            End If
+        Next celda
+    End With
+        
+    'On Error GoTo 0
+End Sub
+
+''''''''''   ACTIVAR   ''''''''''
+Private Sub UserForm_Activate()
+
+    Me.elementosPO.Visible = False
+    Me.lblPO3.Visible = False
+    Me.lblPO4.Visible = False
+    Me.lblPO5.Visible = False
+    Me.lblPO6.Visible = False
+    Me.lblPO7.Visible = False
+    Me.lblPO8.Visible = False
+    
+    Me.lblDesc.Visible = False
+    Me.lblStock1.Visible = False
+    Me.lblStock2.Visible = False
+    Me.lblStock3.Visible = False
+    Me.MultiPage1.Pages.item(2).Visible = False
+    
+'   ---------USERFORM COMPLETO---------
+    With Me
+        .Height = Application.ActiveWindow.Height * 0.85
+        .Width = Application.ActiveWindow.Width * 0.85
+        .Top = Application.ActiveWindow.Top + Application.ActiveWindow.Height * 0.075
+        .Left = Application.ActiveWindow.Left + Application.ActiveWindow.Width * 0.075
+    End With
+    
+'   ---------MULTIPAGE---------
+    With Me.MultiPage1
+        .Height = Application.ActiveWindow.Height
+        .Width = Application.ActiveWindow.Width
+    End With
+    
+'   ---------LISTBOX DE PAGE 1---------
+    Dim listaConsumos() As Variant
+    Dim pt As PivotTable
+    Dim ultFila As Long
+    Dim n As Integer
+    Dim indice(10)
+    Dim vector(10)
+    
+    Set pt = sumaConsumos.PivotTables("dinamicaConsumos2")
+    ultFila = pt.TableRange1.Rows.Count
+    
+    For i = 1 To 10
+        vector(i) = 3.14159265358979 ^ 10
+    Next i
+    
+    ReDim listaConsumos(1 To 10, 1 To 2)
+    For i = 1 To 10
+    n = 0
+        For j = 2 To (ultFila - 1)
+            If sumaConsumos.Range("B" & j).Value > n And _
+            sumaConsumos.Range("B" & j).Value < vector(i) Then
+                n = sumaConsumos.Range("B" & j).Value
+                indice(i) = j
+            Else
+                n = n
+            End If
+        Next j
+        For k = i To 10
+            vector(k) = n
+        Next k
+        
+        listaConsumos(i, 1) = sumaConsumos.Range("A" & indice(i)).Value
+        listaConsumos(i, 2) = sumaConsumos.Range("B" & indice(i)).Value
+    Next i
+    'listaConsumos(1, 1) = "Artículo"
+    'listaConsumos(1, 2) = "Consumo"
+    
+    With Me.ListBox1
+        .Height = Me.Height * 0.6
+        .Width = Me.Width * 0.9
+        .Top = Me.Height * 0.2 '0.15
+        .Left = Me.Width * 0.02
+        .List = listaConsumos
+        
+        .ColumnWidths = Me.ListBox1.Width * 0.7 & ";" & Me.ListBox1.Width * 0.3
+    End With
+    
+'   ---------COMBOBOX GRUPOSBOX---------
+    With Me.gruposBox
+        Dim numFilas As Long
+        Dim pt2 As PivotTable
+        
+        Set pt2 = gruposHerramientas.PivotTables("unicosGrupos")
+        numFilas = pt2.TableRange1.Rows.Count
+        
+        For i = 2 To (numFilas - 2)
+            .AddItem pt2.RowRange(i, 1)
+        Next i
+        
+        .Height = Me.Height * 0.055
+        .Width = Me.Width * 0.31
+        .Top = Me.Height * 0.08
+        .Left = Me.Width * 0.35
+        .Font.Size = Me.Height * 0.024
+        
+    End With
+    
+'   ---------COMBOBOX ARTICULO---------
+    With Me.articulo
+        .Height = Me.Height * 0.055
+        .Width = Me.Width * 0.25
+        .Top = Me.Height * 0.08
+        .Left = Me.Width * 0.02
+        .Font.Size = Me.Height * 0.024
+    End With
+    
+'   ---------BOTON BUSCAR---------
+    With Me.buscar
+        .Height = Me.Height * 0.055
+        .Width = Me.Width * 0.03
+        .Top = Me.Height * 0.079
+        .Left = Me.Width * 0.28
+    End With
+    
+'===================================== PAGE 2 =====================================
+'   ---------LLENADO DE LISTBOX PAGE 2   ---------
+    Call ordenesDeCompra
+
+'   ---------TAMAÑO LISTBOX DE ELEMENTOS DE PO---------
+    With Me.elementosPO
+        .Height = Me.Height * 0.6
+        .Width = Me.Width * 0.9
+        .Top = Me.Height * 0.2
+        .Left = Me.Width * 0.02
+        .ColumnCount = 6
+        .ColumnWidths = Me.elementosPO.Width * 0.09 & ";" & _
+        Me.elementosPO.Width * 0.52 & ";" & _
+        Me.elementosPO.Width * 0.08 & ";" & _
+        Me.elementosPO.Width * 0.08 & ";" & _
+        Me.elementosPO.Width * 0.1 & ";" & _
+        Me.elementosPO.Width * 0.11 & ";"
+        .TextAlign = fmTextAlignCenter
+    End With
+    
+'   ---------LABEL 2---------
+    With Me.Label2
+        .Height = Me.Height * 0.033
+        .Width = Me.Width * 0.15
+        .Top = Me.Height * 0.045
+        .Left = Me.Width * 0.02
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------ESCRIBIR ORDEN (PO)---------
+    With Me.escribirOrden
+        .Height = Me.Height * 0.055
+        .Width = Me.Width * 0.25
+        .Top = Me.Height * 0.08
+        .Left = Me.Width * 0.02
+        .Font.Size = Me.Height * 0.024
+        
+        .Enabled = True
+        .WordWrap = True
+        .Multiline = True
+        .Locked = False
+    End With
+
+'   ---------LABEL PO---------
+    With Me.lblPO
+        .Caption = "PO"
+        .Height = Me.Height * 0.041
+        .Width = Me.elementosPO.Width * 0.5
+        .Top = Me.Height * 0.16
+        .Left = Me.elementosPO.Left
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL PO2---------
+    With Me.lblPO2
+        .Caption = "Estatus"
+        .Height = Me.Height * 0.041
+        .Width = Me.elementosPO.Width * 0.5
+        .Top = Me.Height * 0.16
+        .Left = Me.elementosPO.Left + Me.lblPO.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL PO3---------
+    With Me.lblPO3
+        .Caption = "Fecha PO"
+        .Height = Me.Height * 0.041
+        .Width = Me.elementosPO.Width * 0.09
+        .Top = Me.Height * 0.16
+        .Left = Me.elementosPO.Left
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL PO4---------
+    With Me.lblPO4
+        .Caption = "Artículo"
+        .Height = Me.Height * 0.041
+        .Width = Me.elementosPO.Width * 0.52
+        .Top = Me.Height * 0.16
+        .Left = Me.elementosPO.Left + Me.lblPO3.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL PO5---------
+    With Me.lblPO5
+        .Caption = "Qty PO"
+        .Height = Me.Height * 0.041
+        .Width = Me.elementosPO.Width * 0.08
+        .Top = Me.Height * 0.16
+        .Left = Me.lblPO4.Left + Me.lblPO4.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL PO6---------
+    With Me.lblPO6
+        .Caption = "Recibido"
+        .Height = Me.Height * 0.041
+        .Width = Me.elementosPO.Width * 0.08
+        .Top = Me.Height * 0.16
+        .Left = Me.lblPO5.Left + Me.lblPO5.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+
+'   ---------LABEL PO7---------
+    With Me.lblPO7
+        .Caption = "Estatus"
+        .Height = Me.Height * 0.041
+        .Width = Me.elementosPO.Width * 0.1
+        .Top = Me.Height * 0.16
+        .Left = Me.lblPO6.Left + Me.lblPO6.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+
+'   ---------LABEL PO8---------
+    With Me.lblPO8
+        .Caption = "Última entrega"
+        .Height = Me.Height * 0.041
+        .Width = Me.elementosPO.Width * 0.13
+        .Top = Me.Height * 0.16
+        .Left = Me.lblPO7.Left + Me.lblPO7.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+
+'   ---------BOTON REGRESAR---------
+    With Me.botonRegresar
+        .Height = Me.Height * 0.0475
+        .Width = Me.Width * 0.025
+        .Top = Me.Height * 0.08
+        .Left = Me.Width * 0.35
+        .Font.Size = Me.botonRegresar.Height * 0.5
+    End With
+    
+'   ---------BOTON BORRAR CAJA DE BUSQUEDA PO---------
+    With Me.CommandButton2
+        .Height = Me.escribirOrden.Height * 0.8
+        .Width = Me.Width * 0.025
+        .Top = Me.escribirOrden.Top + Me.escribirOrden.Height * 0.05
+        .Left = Me.escribirOrden.Left + Me.escribirOrden.Width * 1.01
+        .Font.Size = Me.CommandButton2.Height * 0.45
+    End With
+    
+'===================================================================================
+'   ---------COMMAND BUTTON 1---------
+    With Me.CommandButtonClose
+        .Top = Me.MultiPage1.Height * 0.82
+        .Left = Me.MultiPage1.Width * 0.75
+    End With
+    
+'   ---------COMMAND BUTTON 2---------
+    With Me.boton2
+        .Height = Me.Height * 0.08
+        .Width = Me.Width * 0.08
+        .Top = Me.Height * 0.055
+        .Left = Me.Width * 0.8
+    End With
+
+'   ---------BOTON ELIMINAR FILA---------
+    With Me.eliminarFila
+        .Top = Me.MultiPage1.Height * 0.05
+        .Left = Me.MultiPage1.Width * 0.49
+    End With
+    
+'   ---------BOTON DESCONTAR---------
+    With Me.btDescontar
+        .Height = Me.Height * 0.08
+        .Width = Me.Width * 0.08
+        .Top = Me.Height * 0.055
+        .Left = Me.Width * 0.69
+    End With
+    
+'   ---------LABEL BUSCAR ARTICULO---------
+    With Me.Label1
+        .Height = Me.Height * 0.033
+        .Width = Me.Width * 0.14
+        .Top = Me.Height * 0.045
+        .Left = Me.Width * 0.02
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL BUSCAR GRUPO---------
+    With Me.Label3
+        .Height = Me.Height * 0.033
+        .Width = Me.Width * 0.14
+        .Top = Me.Height * 0.045
+        .Left = Me.Width * 0.35
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL ARTÍCULO---------
+    With Me.lblArt
+        .Height = Me.Height * 0.041
+        .Width = Me.ListBox1.Width * 0.7
+        .Top = Me.Height * 0.16
+        .Left = Me.ListBox1.Left
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL DESCRIPCIÓN---------
+    With Me.lblDesc
+        .Height = Me.Height * 0.041
+        .Width = Me.ListBox1.Width * 0.35
+        .Top = Me.Height * 0.16
+        .Left = Me.ListBox1.Left + Me.lblArt.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+'   ---------LABEL CONSUMOS---------
+    With Me.lblCons
+        .Height = Me.Height * 0.041
+        .Width = Me.ListBox1.Width * 0.3
+        .Top = Me.Height * 0.16
+        .Left = Me.ListBox1.Left + Me.lblArt.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+    Call elementosPageDetalles(Me)
+End Sub
+
+'   ---------COMBOBOX GRUPOS CAMBIO---------
+Private Sub gruposBox_Change()
+    Dim filtroGrupo As String
+    Dim vector2() As Variant
+    Dim numFila2 As Long
+    Dim n2 As Integer
+    
+    Call labelsTamano(Me)
+    
+    filtroGrupo = Me.gruposBox.Value
+    numFila2 = Exist.ListObjects("tabExistencias").ListRows.Count
+    ReDim vector2(1 To 727, 1 To 5)
+    
+    n2 = 0
+    For i = 2 To numFila2
+        
+        If Exist.Range("F" & i) = filtroGrupo Then
+            n2 = n2 + 1
+            vector2(n2, 1) = Exist.Range("D" & i).Value
+            vector2(n2, 2) = Exist.Range("E" & i).Value
+            vector2(n2, 3) = Exist.Range("I" & i).Value
+            vector2(n2, 4) = Exist.Range("H" & i).Value
+            vector2(n2, 5) = Exist.Range("J" & i).Value
+        End If
+    Next i
+    
+    vector2 = Application.Transpose(vector2)
+    ReDim Preserve vector2(1 To 5, 1 To n2 + 1)
+    vector2 = Application.Transpose(vector2)
+    
+    Me.ListBox1.Clear
+    Me.ListBox1.List = vector2
+End Sub
+
+
+'================================== PAGE 2 =======================================
+
+'   ---------LISTBOX DE PO, DOBLE CLICK---------
+Private Sub opListB_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
+    Dim orden As Long
+    Dim fila As Long
+    Dim n As Long
+    Dim vector() As Variant
+    Dim k As Long
+    
+    orden = Me.opListB.ListIndex
+    If orden <> -1 Then
+        If Me.opListB.List(orden) = "" Then
+           orden = orden - 1
+        End If
+        
+        Me.elementosPO.Visible = True
+        Me.lblPO3.Visible = True
+        Me.lblPO4.Visible = True
+        Me.lblPO5.Visible = True
+        Me.lblPO6.Visible = True
+        Me.lblPO7.Visible = True
+        Me.lblPO8.Visible = True
+        Me.opListB.Visible = False
+        Me.lblPO.Visible = False
+        Me.lblPO2.Visible = False
+        
+        fila = OPsheet.ListObjects("tabPO").ListRows.Count + 1
+        ReDim vector(1 To 100, 1 To 6)
+        
+        n = 2
+        k = 1
+        For Each celda In OPsheet.Range("C2:C" & fila)
+            If celda = Me.opListB.List(orden) Then
+                vector(k, 1) = OPsheet.Range("B" & n).Value
+                vector(k, 2) = OPsheet.Range("D" & n).Value
+                vector(k, 3) = OPsheet.Range("F" & n).Value
+                vector(k, 4) = OPsheet.Range("G" & n).Value
+                vector(k, 5) = OPsheet.Range("H" & n).Value
+                vector(k, 6) = OPsheet.Range("I" & n).Value
+                k = k + 1
+            End If
+            n = n + 1
+        Next celda
+        
+        vector = Application.Transpose(vector)
+        ReDim Preserve vector(1 To 6, 1 To k)
+        vector = Application.Transpose(vector)
+        
+        Me.elementosPO.List = vector
+    Else
+        MsgBox "Selecciona una orden.", vbExclamation, "Error"
+    End If
+End Sub
+
+Private Sub CommandButton2_Click()
+    Me.escribirOrden.Value = ""
+End Sub
+
+'   ---------BOTON CERRAR---------
+Private Sub CommandButtonClose_Click()
+    Unload Me
+    'UserForm1.Show
+End Sub
+
+Private Sub escribirOrden_change()
+    Dim numOrden As String
+    Dim dict As Object
+    Dim limite As Long
+    Dim i As Long
+    Dim valCelda As Variant
+    
+    numOrden = UCase(Me.escribirOrden.Value)
+    
+    If numOrden <> "" Then
+        Set dict = CreateObject("Scripting.Dictionary")
+        limite = OPsheet.Range("C" & OPsheet.Rows.Count).End(xlUp).row
+        
+        For i = 2 To limite
+            valCelda = OPsheet.Range("C" & i).Value
+            If InStr(UCase(CStr(valCelda)), numOrden) > 0 Then
+                If Not IsEmpty(valCelda) And valCelda <> "" Then
+                    dict(valCelda) = 1
+                End If
+            End If
+        Next i
+        
+        Me.opListB.Clear
+        If dict.Count > 0 Then
+            Me.opListB.List = dict.keys
+        End If
+    Else
+        Call ordenesDeCompra
+    End If
+End Sub
+
+'   ---------EXPORTAR MINIMOS---------
+Private Sub boton2_click()
+    Dim datosOrigen As Variant  'Variant puede almacenar cualquier tipo de variable
+    Dim datosResultado() As Variant
+    Dim i As Long, j As Long, n As Long
+    Dim fila As Long
+    Dim nombre As String
+    Dim wb As Workbook
+    
+    On Error Resume Next
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    
+    nombre = Application.InputBox("File name?", Type:=2)
+    
+    If nombre <> "Falso" And nombre <> "False" Then
+        Workbooks.Add.SaveAs Filename:=nombre
+        Set wb = Workbooks(nombre & ".xlsx")
+    End If
+    
+    fila = Exist.Range("A" & Exist.Rows.Count).End(xlUp).row
+    datosOrigen = Exist.Range("A1:J" & fila).Value  'datosOrigen se convierte en una matriz 2d
+    
+    ReDim datosResultado(0 To UBound(datosOrigen, 1), 1 To 10)
+    n = 0
+    
+    datosResultado(0, 1) = "Tipo"
+    datosResultado(0, 2) = "Maquina"
+    datosResultado(0, 3) = "Proveedor"
+    datosResultado(0, 4) = "Artículo"
+    datosResultado(0, 5) = "Descripción"
+    datosResultado(0, 6) = "Grupo"
+    datosResultado(0, 7) = "Tamaño"
+    datosResultado(0, 8) = "Existencias Nuevo"
+    datosResultado(0, 9) = "Existencias Reformulado"
+    datosResultado(0, 10) = "Stock total"
+    
+    For i = 2 To UBound(datosOrigen, 1) 'UBound(datosOrigen, 1) es un número, en este caso
+                                        'es el indice más alto de la matriz (Upper Bound)
+        If datosOrigen(i, 10) = 0 And Not IsEmpty(datosOrigen(i, 10)) Then
+            n = n + 1
+            For j = 1 To 10
+                datosResultado(n, j) = datosOrigen(i, j)
+            Next j
+        End If
+    Next i
+    
+    If n > 0 Then
+        wb.Sheets(1).Cells.ClearContents
+        wb.Sheets(1).Range("A1").Resize(n, 10).Value = datosResultado
+        wb.Sheets(1).Cells.WrapText = False
+    End If
+    
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    On Error GoTo 0
+End Sub
+
+'   ---------BOTON BUSCAR CLICK---------
+Private Sub buscar_Click()
+    Dim datos() As Variant
+    Dim filaDestino As Long
+    Dim itemBD As String
+    Dim tamano As Long
+    Dim fechaActual As Date
+    
+    Call labelsTamano(Me)
+    
+    Me.gruposBox.Value = ""
+    itemBD = Me.articulo.Value
+    tamano = Exist.Range("A" & Exist.Rows.Count).End(xlUp).row
+    filaDestino = 1
+    
+    'Tamaño del arreglo (filas, columnas)
+    ReDim datos(1 To 1, 0 To 4)
+    
+    If Not itemBD = "" Then
+        For i = 2 To tamano
+            If Exist.Range("D" & i).Value = itemBD Then
+                
+                datos(filaDestino, 0) = Exist.Range("D" & i).Value
+                datos(filaDestino, 1) = Exist.Range("E" & i).Value
+                datos(filaDestino, 2) = Exist.Range("I" & i).Value
+                datos(filaDestino, 3) = Exist.Range("H" & i).Value
+                datos(filaDestino, 4) = Exist.Range("J" & i).Value
+                
+                filaDestino = n + 1
+            End If
+        Next i
+    
+        Me.ListBox1.Clear
+        Me.ListBox1.List = datos
+        fechaActual = Date
+    End If
+    
+    'Debug.Print Format(fechaActual, "dd-mmm")
+    
+    'Dim pt As PivotTable
+    'Dim pf As PivotField
+    'Dim pi As PivotItem
+    
+    ' Referencia a la primera tabla dinámica de la hoja activa
+    'Set pt = consumos.PivotTables("dinamicaConsumos1")
+    
+    ' Campo que quieres expandir (ajusta el nombre)
+    'Set pf = pt.PivotFields("Días (Fecha (m/d/y))")
+    
+    ' Elemento que quieres expandir (ajusta el nombre)
+    'Set pi = pf.PivotItems(Format(fechaActual, "dd-mmm"))
+    
+    ' Desplegar (True = expandir, False = contraer)
+    'pi.ShowDetail = True
+    
+End Sub
+
+'   --------- LISTOBJECT PAGE 2---------
+Private Sub ordenesDeCompra()
+    Dim dict As Object
+    Dim nFilas As Long
+    Dim array1 As Variant
+    
+    Set dict = CreateObject("Scripting.Dictionary")
+    nFilas = OPsheet.ListObjects("tabPO").ListRows.Count
+    
+    For Each orden In OPsheet.Range("C2:C" & nFilas)
+        If orden.Value <> "" Then
+            dict(orden.Value) = 1
+        End If
+    Next orden
+    Me.opListB.List = dict.keys
+    
+    With Me.opListB
+        .ColumnCount = 2
+        .ColumnWidths = 250
+        
+        .Height = Me.Height * 0.6
+        .Width = Me.Width * 0.9
+        .Top = Me.Height * 0.2
+        .Left = Me.Width * 0.02
+    End With
+End Sub
+
+Private Sub botonRegresar_click()
+    Me.elementosPO.Visible = False
+    Me.lblPO3.Visible = False
+    Me.lblPO4.Visible = False
+    Me.lblPO5.Visible = False
+    Me.lblPO6.Visible = False
+    Me.lblPO7.Visible = False
+    Me.lblPO8.Visible = False
+    Me.opListB.Visible = True
+    Me.lblPO.Visible = True
+    Me.lblPO2.Visible = True
+End Sub
+
+'====================================== PAGE 4 ======================================
+Private Sub MultiPage1_Change()
+    If Me.MultiPage1.Value = 3 Then
+        Dim tbl As ListObject
+        Dim i As Long
+        Dim dict As Object
+        Set dict = CreateObject("Scripting.Dictionary")
+        Set tbl = consumo.ListObjects("DailyConsumption")
+        
+        Me.cmbFechaInicio.Clear
+        Me.cmbFechaFin.Clear
+        
+        Me.cmbFechaInicio.AddItem "Todas"
+        Me.cmbFechaFin.AddItem "Todas"
+        
+        If tbl.ListRows.Count > 0 Then
+            For i = 1 To tbl.ListRows.Count
+                If tbl.DataBodyRange(i, 5).Value <> "" Then
+                    dict(CStr(tbl.DataBodyRange(i, 5).Value)) = 1
+                End If
+            Next i
+            For Each k In dict.keys
+                Me.cmbFechaInicio.AddItem k
+                Me.cmbFechaFin.AddItem k
+            Next k
+        End If
+        
+        Me.cmbFechaInicio.Value = "Todas"
+        Me.cmbFechaFin.Value = "Todas"
+        Me.txtBuscarArticulo.Value = ""
+        Call FiltrarHistorial
+    End If
+End Sub
+
+Private Sub txtBuscarArticulo_Change()
+    Call FiltrarHistorial
+End Sub
+
+Private Sub cmbFechaInicio_Change()
+    'If IsDate(Me.cmbFechaInicio.Value) And IsDate(Me.cmbFechaFin.Value) Then
+    '    If CDate(Me.cmbFechaInicio.Value) > CDate(Me.cmbFechaFin.Value) Then
+    '        Me.cmbFechaInicio.Value = CDate(Me.cmbFechaFin.Value) - 1
+    '        Exit Sub
+    '    End If
+    'End If
+    Call FiltrarHistorial
+End Sub
+
+Private Sub cmbFechaFin_Change()
+    'If IsDate(Me.cmbFechaInicio.Value) And IsDate(Me.cmbFechaFin.Value) Then
+    '    If CDate(Me.cmbFechaInicio.Value) > CDate(Me.cmbFechaFin.Value) Then
+    '        Me.cmbFechaInicio.Value = CDate(Me.cmbFechaFin.Value) - 1
+    '        Exit Sub
+    '    End If
+    'End If
+    Call FiltrarHistorial
+End Sub
+
+Sub FiltrarHistorial()
+    Dim tbl As ListObject
+    Dim i As Long, k As Long
+    Dim arr() As Variant
+    Dim cNuevo As Double, cRef As Double
+    Dim artFiltro As String, fecInicio As String, fecFin As String
+    Dim artVal As String
+    Dim fecVal As Date
+    Dim pasaInicio As Boolean, pasaFin As Boolean
+    
+    Set tbl = consumo.ListObjects("DailyConsumption")
+    artFiltro = UCase(Me.txtBuscarArticulo.Value)
+    fecInicio = Me.cmbFechaInicio.Value
+    fecFin = Me.cmbFechaFin.Value
+    
+    Me.listBoxHistorial.Clear
+    
+    If tbl.ListRows.Count > 0 Then
+        ReDim arr(1 To tbl.ListRows.Count, 1 To 5)
+        k = 1
+        
+        For i = tbl.ListRows.Count To 1 Step -1
+            artVal = UCase(tbl.DataBodyRange(i, 1).Value)
+            
+            If IsDate(tbl.DataBodyRange(i, 5).Value) Then
+                fecVal = CDate(tbl.DataBodyRange(i, 5).Value)
+                
+                pasaInicio = False
+                If fecInicio = "Todas" Or fecInicio = "" Then
+                    pasaInicio = True
+                ElseIf IsDate(fecInicio) Then
+                    If fecVal >= CDate(fecInicio) Then pasaInicio = True
+                End If
+                
+                pasaFin = False
+                If fecFin = "Todas" Or fecFin = "" Then
+                    pasaFin = True
+                ElseIf IsDate(fecFin) Then
+                    If fecVal <= CDate(fecFin) Then pasaFin = True
+                End If
+                
+                If (artFiltro = "" Or InStr(artVal, artFiltro) > 0) And pasaInicio And pasaFin Then
+                    arr(k, 1) = tbl.DataBodyRange(i, 5).Value
+                    arr(k, 2) = tbl.DataBodyRange(i, 1).Value
+                    cNuevo = Val(tbl.DataBodyRange(i, 3).Value)
+                    cRef = Val(tbl.DataBodyRange(i, 4).Value)
+                    
+                    If cNuevo <> 0 Then
+                        arr(k, 4) = "Nuevo"
+                        If cNuevo < 0 Then
+                            arr(k, 3) = "Entrada"
+                            arr(k, 5) = Abs(cNuevo)
+                        Else
+                            arr(k, 3) = "Descuento"
+                            arr(k, 5) = cNuevo
+                        End If
+                    Else
+                        arr(k, 4) = "Reformulado"
+                        If cRef < 0 Then
+                            arr(k, 3) = "Entrada"
+                            arr(k, 5) = Abs(cRef)
+                        Else
+                            arr(k, 3) = "Descuento"
+                            arr(k, 5) = cRef
+                        End If
+                    End If
+                    k = k + 1
+                End If
+            End If
+        Next i
+        
+        If k > 1 Then
+            Dim finalArr() As Variant
+            ReDim finalArr(1 To k - 1, 1 To 5)
+            For i = 1 To k - 1
+                finalArr(i, 1) = arr(i, 1)
+                finalArr(i, 2) = arr(i, 2)
+                finalArr(i, 3) = arr(i, 3)
+                finalArr(i, 4) = arr(i, 4)
+                finalArr(i, 5) = arr(i, 5)
+            Next i
+            
+            With Me.listBoxHistorial
+                .ColumnCount = 5
+                .ColumnWidths = "80;160;70;90;60"
+                .List = finalArr
+            End With
+        End If
+    End If
+End Sub
+
+Private Sub btnLimpiarFiltros_Click()
+    Me.cmbFechaInicio.Value = "Todas"
+    Me.cmbFechaFin.Value = "Todas"
+End Sub
+
+Private Sub btLimpiarArtH_Click()
+    Me.txtBuscarArticulo.Value = ""
+End Sub
+'==========================================================================================
+
+Private Sub ListBox1_DblClick(ByVal Cancel As MSForms.ReturnBoolean)
+    Call plantilla(Me)
+End Sub
+
+Private Sub eliminarFila_Click()
+    Dim aaa As ListObject
+    
+    Set aaa = consumos.ListObjects("DailyConsumption")
+    'Eliminar la última fila de una tabla
+    'aaa.ListRows(aaa.ListRows.Count).Delete
+End Sub
+
+Private Sub btVolver789_click()
+    Me.MultiPage1.Pages(0).Visible = True
+    Me.MultiPage1.Pages(2).Visible = False
+    Me.MultiPage1.Pages(1).Visible = True
+    
+    'Me.MultiPage1.Pages (1)
+End Sub
+
+Private Sub btDescontar_Click()
+    UserForm4.modo = True
+    Unload Me
+    UserForm4.Show
+End Sub
+
+Private Sub btAgregar_Click()
+    UserForm4.modo = False
+    Unload Me
+    UserForm4.Show
+End Sub
