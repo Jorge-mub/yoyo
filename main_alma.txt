@@ -502,6 +502,32 @@ Private Sub UserForm_Activate()
         .Left = Me.listBoxHistorial.Left
         .Height = Me.listBoxHistorial.Height
         .Width = Me.listBoxHistorial.Width
+        .TextAlign = fmTextAlignCenter
+        .Font.Size = .Height * 0.045
+    End With
+    
+    With Me.txtBuscarArtAcum
+        .Height = Me.Height * 0.06
+        .Width = Me.Width * 0.2
+        .Top = Me.Height * 0.1
+        .Left = Me.Width * 0.03
+        .Font.Size = .Height * 0.46
+    End With
+    
+    With Me.cmbMesInicioAcum
+        .Height = Me.Height * 0.06
+        .Width = Me.Width * 0.105
+        .Top = Me.Height * 0.1
+        .Left = Me.Width * 0.42
+        .Font.Size = .Height * 0.46
+    End With
+    
+    With Me.cmbMesFinAcum
+        .Height = Me.Height * 0.06
+        .Width = Me.Width * 0.105
+        .Top = Me.Height * 0.1
+        .Left = Me.Width * 0.58
+        .Font.Size = .Height * 0.46
     End With
 
 End Sub
@@ -874,7 +900,7 @@ Sub FiltrarHistorial()
                 condicionArt = "Nuevo"
                 If cNuevo < 0 Then
                     tipoMov = "Retiros"
-                    valMov = Abs(cNuevo)
+                    valMov = cNuevo 'Abs(cNuevo)
                 Else
                     tipoMov = "Entradas"
                     valMov = cNuevo
@@ -883,7 +909,7 @@ Sub FiltrarHistorial()
                 condicionArt = "Reformulado"
                 If cRef < 0 Then
                     tipoMov = "Retiros"
-                    valMov = Abs(cRef)
+                    valMov = cRef 'Abs(cRef)
                 Else
                     tipoMov = "Entradas"
                     valMov = cRef
@@ -944,7 +970,11 @@ Sub FiltrarHistorial()
             
             With Me.listBoxHistorial
                 .ColumnCount = 5
-                .ColumnWidths = "80;160;70;90;60"
+                .ColumnWidths = Me.listBoxHistorial.Width * 0.11 & ";" & _
+                                Me.listBoxHistorial.Width * 0.5 & ";" & _
+                                Me.listBoxHistorial.Width * 0.15 & ";" & _
+                                Me.listBoxHistorial.Width * 0.15 & ";" & _
+                                Me.listBoxHistorial.Width * 0.08
                 .List = finalArr
             End With
         End If
@@ -985,7 +1015,7 @@ Private Sub btVolver789_click()
 End Sub
 
 Private Sub tglFiltroTipo_Change()
-    ' Alterna el texto del botón según su estado (Null, True, False)
+    ' Alternar texto del botón según su estado (Null, True, False)
     If IsNull(Me.tglFiltroTipo.Value) Then
         Me.tglFiltroTipo.Caption = "Todo"
     ElseIf Me.tglFiltroTipo.Value = True Then
@@ -1226,7 +1256,11 @@ Sub FiltrarAcumulado()
             
             With Me.listBoxAcumulado
                 .ColumnCount = 5
-                .ColumnWidths = "70;160;110;110;80"
+                .ColumnWidths = Me.listBoxAcumulado.Width * 0.11 & ";" & _
+                                Me.listBoxAcumulado.Width * 0.5 & ";" & _
+                                Me.listBoxAcumulado.Width * 0.15 & ";" & _
+                                Me.listBoxAcumulado.Width * 0.15 & ";" & _
+                                Me.listBoxAcumulado.Width * 0.08
                 .List = finalArr
             End With
         End If
@@ -1244,5 +1278,6 @@ Private Sub btAgregar_Click()
     Unload Me
     UserForm4.Show
 End Sub
+
 
 
