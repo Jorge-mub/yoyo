@@ -1,3 +1,5 @@
+'=== mod ===
+
 Public Sub labelsTamano(frm As Object)
     frm.lblDesc.Visible = True
     frm.lblCons.Visible = False
@@ -52,9 +54,9 @@ Public Sub elementosPageDetalles(frm As Object)
     bloque2yy = frm.Height * 0.195
     bloque3yy = frm.Height * 0.302
     
-    bloque1x = frm.Width * 0.025
-    bloque2x = frm.Width * 0.225
-    bloque3x = frm.Width * 0.425
+    bloque1x = frm.Width * 0.078
+    bloque2x = frm.Width * 0.35
+    bloque3x = frm.Width * 0.58
     
     altura = frm.Height * 0.033
     ancho = frm.Width * 0.1
@@ -76,7 +78,7 @@ Public Sub elementosPageDetalles(frm As Object)
     With frm.Label12
         .Height = altura
         .Width = ancho
-        .Top = bloque2y
+        .Top = bloque2y * 1.37
         .Left = bloque1x
         .Font.Size = letra
     End With
@@ -84,7 +86,7 @@ Public Sub elementosPageDetalles(frm As Object)
     With frm.Label13
         .Height = altura
         .Width = ancho
-        .Top = bloque3y
+        .Top = bloque3y * 1.43
         .Left = bloque1x
         .Font.Size = letra
     End With
@@ -92,7 +94,7 @@ Public Sub elementosPageDetalles(frm As Object)
     With frm.Label14
         .Height = altura
         .Width = ancho
-        .Top = bloque1y
+        .Top = bloque3y
         .Left = bloque2x
         .Font.Size = letra
     End With
@@ -100,7 +102,7 @@ Public Sub elementosPageDetalles(frm As Object)
     With frm.Label15
         .Height = altura
         .Width = ancho
-        .Top = bloque2y
+        .Top = bloque1y 'bloque3y * 1.13
         .Left = bloque2x
         .Font.Size = letra
     End With
@@ -128,12 +130,20 @@ Public Sub elementosPageDetalles(frm As Object)
         .Left = bloque3x
         .Font.Size = letra
     End With
+    
+    With frm.Label27
+        .Height = altura
+        .Width = ancho
+        .Top = bloque2y
+        .Left = bloque2x
+        .Font.Size = letra
+    End With
 
 '   ============================== TEXTBOX ==============================
     With frm.TextBox1
-        .Height = altura2
-        .Width = ancho2
-        .Top = bloque1yy
+        .Height = altura2 * 2.4
+        .Width = ancho2 * 1.35
+        .Top = frm.Label11.Top + frm.Label11.Height
         .Left = bloque1x
         .Font.Size = letra
         .Enabled = True
@@ -143,9 +153,9 @@ Public Sub elementosPageDetalles(frm As Object)
     End With
     
     With frm.TextBox2
-        .Height = altura2
-        .Width = ancho2
-        .Top = bloque2yy
+        .Height = altura2 * 2.4
+        .Width = ancho2 * 1.35
+        .Top = frm.Label12.Top + frm.Label12.Height
         .Left = bloque1x
         .Font.Size = letra
         .Enabled = True
@@ -155,9 +165,9 @@ Public Sub elementosPageDetalles(frm As Object)
     End With
     
     With frm.TextBox3
-        .Height = altura2
-        .Width = ancho2
-        .Top = bloque3yy
+        .Height = altura2 * 2
+        .Width = ancho2 * 1.35
+        .Top = frm.Label13.Top + frm.Label13.Height
         .Left = bloque1x
         .Font.Size = letra
         .Enabled = True
@@ -168,8 +178,8 @@ Public Sub elementosPageDetalles(frm As Object)
     
     With frm.TextBox4
         .Height = altura2
-        .Width = ancho2
-        .Top = bloque1yy
+        .Width = frm.Label16.Width
+        .Top = bloque3yy
         .Left = bloque2x
         .Font.Size = letra
         .Enabled = True
@@ -181,7 +191,7 @@ Public Sub elementosPageDetalles(frm As Object)
     With frm.TextBox5
         .Height = altura2
         .Width = ancho2
-        .Top = bloque2yy
+        .Top = frm.Label15.Top + frm.Label15.Height
         .Left = bloque2x
         .Font.Size = letra
         .Enabled = True
@@ -192,8 +202,8 @@ Public Sub elementosPageDetalles(frm As Object)
     
     With frm.TextBox6
         .Height = altura2
-        .Width = ancho2
-        .Top = bloque1yy
+        .Width = frm.Label16.Width
+        .Top = frm.Label16.Top + frm.Label16.Height
         .Left = bloque3x
         .Font.Size = letra
         .Enabled = True
@@ -204,8 +214,8 @@ Public Sub elementosPageDetalles(frm As Object)
     
     With frm.TextBox7
         .Height = altura2
-        .Width = ancho2
-        .Top = bloque2yy
+        .Width = frm.Label16.Width
+        .Top = frm.Label17.Top + frm.Label17.Height
         .Left = bloque3x
         .Font.Size = letra
         .Enabled = True
@@ -216,8 +226,8 @@ Public Sub elementosPageDetalles(frm As Object)
     
     With frm.TextBox8
         .Height = altura2
-        .Width = ancho2
-        .Top = bloque3yy
+        .Width = frm.Label16.Width
+        .Top = frm.Label18.Top + frm.Label18.Height
         .Left = bloque3x
         .Font.Size = letra
         .Enabled = True
@@ -226,28 +236,40 @@ Public Sub elementosPageDetalles(frm As Object)
         .Locked = True
     End With
     
+    With frm.TextBox9
+        .Height = altura2
+        .Width = ancho2
+        .Top = frm.Label27.Top + frm.Label27.Height
+        .Left = bloque2x
+        .Font.Size = letra
+        .Enabled = True
+        .WordWrap = True
+        .Multiline = True
+        .Locked = True
+    End With
+    
     With frm.btVolver789
-        .Height = frm.Height * 0.1
-        .Width = frm.Width * 0.1
-        .Top = frm.Height * 0.1
-        .Left = frm.Width * 0.5
+        .Height = frm.MultiPage1.Height
+        .Width = frm.Width * 0.025
+        .Top = 0
+        .Left = 0
         .Font.Size = letra
     End With
     
     With frm.ListBox2
         .Height = frm.Height * 0.75
-        .Width = frm.Width * 0.35
+        .Width = frm.Width * 0.25
         .Top = frm.Height * 0.085
-        .Left = frm.Width * 0.61
+        .Left = frm.Width * 0.7
         .ColumnCount = 3
         .Font.Size = 12
         .ColumnWidths = frm.ListBox2.Width * 0.4 & ";" & _
-        frm.ListBox2.Width * 0.2 & ";" & frm.ListBox2.Width * 0.29
+        frm.ListBox2.Width * 0.15 & ";" & frm.ListBox2.Width * 0.4
         .TextAlign = fmTextAlignCenter
     End With
     
     With frm.ListBox3
-        .Height = frm.Height * 0.35
+        .Height = frm.Height * 0.25
         .Width = frm.Width * 0.5
         .Top = frm.Height * 0.45
         .Left = bloque1x
@@ -272,11 +294,9 @@ Public Sub plantilla(frm As Object)
         ultFila = Exist.ListObjects("tabExistencias").ListRows.Count + 2
         
         If item = "" Then item = frm.ListBox1.List(indice - 1, 0)
-        'End If
         
         Set fila = Exist.Range("D1:D" & ultFila).Find(item, LookIn:=xlValues)
         delta = Trim(Replace(fila.Address, "$D$", Delete))
-        'Debug.Print Exist.Range("E" & delta)
         
         frm.TextBox1.Value = Exist.Range("D" & delta).Value
         frm.TextBox2.Value = Exist.Range("E" & delta).Value
@@ -286,6 +306,7 @@ Public Sub plantilla(frm As Object)
         frm.TextBox6.Value = Exist.Range("I" & delta).Value
         frm.TextBox7.Value = Exist.Range("H" & delta).Value
         frm.TextBox8.Value = Exist.Range("J" & delta).Value
+        frm.TextBox9.Value = Exist.Range("O" & delta).Value
         
         '======================= LISTBOXES =======================
         frm.ListBox2.Clear
@@ -341,3 +362,5 @@ Public Sub plantilla(frm As Object)
         MsgBox "Selecciona un artículo.", vbExclamation, "Error"
     End If
 End Sub
+
+
