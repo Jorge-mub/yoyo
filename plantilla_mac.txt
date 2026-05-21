@@ -7,6 +7,7 @@ Sub ConsolidarElementos()
     Dim ultFila As Long
     Dim i As Long
     Dim elemento As String
+    Dim condicion As String
     Dim codigo As String
     Dim fecha As Variant
     Dim cantidad As Double
@@ -17,7 +18,7 @@ Sub ConsolidarElementos()
     Dim filaDestino As Long
 
     Set wsOrigen = ActiveSheet
-    'Set wsDestino = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets _
+    Set wsDestino = ThisWorkbook.Sheets.Add(After:=ThisWorkbook.Sheets _
     (ThisWorkbook.Sheets.Count))
     
     On Error Resume Next
@@ -31,40 +32,72 @@ Sub ConsolidarElementos()
         elemento = CStr(wsOrigen.Cells(i, 3).Value)
         codigo = CStr(wsOrigen.Cells(i, 1).Value)
         cantidad = Val(wsOrigen.Cells(i, 8).Value)
-        fecha = wsOrigen.Cells(i, 11).Value & " " & codigo
+        condicion = CStr(wsOrigen.Cells(i, 4).Value)
+        fecha = wsOrigen.Cells(i, 11).Value
         
         partes2 = Split(fecha, " ")
         'Debug.Print partes2(3)
         'ThisWorkbook.Sheets(1).Range("S2").Value = partes2(0)
         'ThisWorkbook.Sheets(1).Range("S3").Value = CDate(partes2(0))
 
-        If elemento <> "" And IsDate(fecha) Then
-            clave = elemento & "|" & CStr(CDate(partes2(0)))
-            If dict.Exists(clave) And partes2(3) Like "3*" Then
-                dict(clave) = dict(clave) + cantidad
+        If elemento <> "" And IsDate(partes2(0)) Then
+            clave = elemento & "|" & CStr(CDate(partes2(0))) & "|" & codigo & "|" & condicion
+            If condicion = "Nuevo" Then
+                If dict.Exists(clave) And codigo Like "3*" Then
+                    dict(clave) = dict(clave) + cantidad
+                ElseIf dict.Exists(clave) And codigo Like "2*" Then
+                    dict(clave) = dict(clave) + cantidad
+                ElseIf dict.Exists(clave) And codigo Like "1*" Then
+                    dict(clave) = dict(clave) + cantidad
+                Else
+                    dict.Add clave, cantidad
+                End If
             Else
-                dict.Add clave, cantidad
+                If dict.Exists(clave) And codigo Like "3*" Then
+                    dict(clave) = dict(clave) + cantidad
+                ElseIf dict.Exists(clave) And codigo Like "2*" Then
+                    dict(clave) = dict(clave) + cantidad
+                ElseIf dict.Exists(clave) And codigo Like "1*" Then
+                    dict(clave) = dict(clave) + cantidad
+                Else
+                    dict.Add clave, cantidad
+                End If
             End If
         End If
     Next i
 
     wsDestino.Cells(1, 1).Value = "Elemento"
-    wsDestino.Cells(1, 2).Value = "Fecha"
+    wsDestino.Cells(1, 2).Value = "Condición"
     wsDestino.Cells(1, 3).Value = "Cantidad Total"
+    wsDestino.Cells(1, 4).Value = "Código"
+    wsDestino.Cells(1, 5).Value = "Fecha"
 
     filaDestino = 2
     For Each varKey In dict.keys
         partes = Split(varKey, "|")
         
         wsDestino.Cells(filaDestino, 1).Value = partes(0)
+        wsDestino.Cells(filaDestino, 2).Value = partes(3)
         
-        With wsDestino.Cells(filaDestino, 2)
+        If partes(2) Like "3*" Then
+            wsDestino.Cells(filaDestino, 3).Value = "Entrada"
+        ElseIf partes(2) Like "2*" Then
+            wsDestino.Cells(filaDestino, 3).Value = "Devolución"
+        Else
+            wsDestino.Cells(filaDestino, 3).Value = "Retiro"
+        End If
+        
+        wsDestino.Cells(filaDestino, 4).Value = dict(varKey)
+        
+        With wsDestino.Cells(filaDestino, 5)
             .Value = CDate(partes(1))
             .NumberFormat = "dd/mm/yyyy"
         End With
         
-        wsDestino.Cells(filaDestino, 3).Value = dict(varKey)
-        
         filaDestino = filaDestino + 1
     Next varKey
 End Sub
+
+
+
+
