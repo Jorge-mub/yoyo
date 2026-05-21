@@ -1,3 +1,5 @@
+'=== f4 ===
+
 Dim ws As Worksheet
 Dim table As ListObject
 Dim currentDate As Date
@@ -11,24 +13,191 @@ Private vector As Variant
 
 Private Sub UserForm_Activate()
     Me.ComboBox2 = Date
-    'Debug.Print modo
     If modo Then
         Me.Caption = "Descuento de Inventario"
+        Me.Label10.Visible = True
+        Me.Label1.Visible = False
     Else
         Me.Caption = "Entrada de Material"
+        Me.Label10.Visible = False
+        Me.Label11.Visible = True
     End If
+    
+    With Me.Label10
+        .Height = Me.Height * 0.04
+        .Width = Me.Width * 0.31
+        .Top = Me.Height * 0.03
+        .Left = (Me.Width - Me.Label10.Width) / 2
+        .Font.Size = Me.Height * 0.035
+        .Font.Bold = True
+    End With
+    
+    With Me.Label11
+        .Height = Me.Height * 0.04
+        .Width = Me.Width * 0.28
+        .Top = Me.Height * 0.03
+        .Left = (Me.Width - Me.Label11.Width) / 2
+        .Font.Size = Me.Height * 0.035
+        .Font.Bold = True
+    End With
+    
+    With Me.caja1
+        .Height = Me.Height * 0.5
+        .Width = Me.Width * 0.75
+        .Top = Me.Height * 0.4
+        .Left = Me.Width * 0.03
+        .ColumnCount = 4
+        .ColumnWidths = Me.caja1.Width * 0.2 & ";" & _
+                        Me.caja1.Width * 0.5 & ";" & _
+                        Me.caja1.Width * 0.15 & ";" & _
+                        Me.caja1.Width * 0.14
+        .Font.Size = Me.Height * 0.029
+        .TextAlign = fmTextAlignCenter
+    End With
+'----------------
+    With Me.lbl01
+        .Height = Me.Height * 0.041
+        .Width = Me.caja1.Width * 0.2
+        .Top = Me.caja1.Top - .Height
+        .Left = Me.caja1.Left
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+    With Me.lbl02
+        .Height = Me.Height * 0.041
+        .Width = Me.caja1.Width * 0.5
+        .Top = Me.caja1.Top - .Height
+        .Left = Me.caja1.Left + Me.lbl01.Width
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+    With Me.lbl03
+        .Height = Me.Height * 0.041
+        .Width = Me.caja1.Width * 0.15
+        .Top = Me.caja1.Top - .Height
+        .Left = Me.lbl02.Width + Me.lbl02.Left
+        .Font.Size = Me.Height * 0.029
+    End With
+'----------------
+    With Me.lbl04
+        .Height = Me.Height * 0.041
+        .Width = Me.caja1.Width * 0.15
+        .Top = Me.caja1.Top - .Height
+        .Left = Me.lbl03.Width + Me.lbl03.Left
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+    With Me.Label3
+        .Height = Me.Height * 0.04
+        .Width = Me.caja1.Width * 0.3
+        .Top = Me.Height * 0.11
+        .Left = Me.caja1.Left
+        .Font.Size = Me.Height * 0.03
+        .Font.Bold = True
+    End With
+    
+    With Me.ComboBox2
+        .Height = Me.Height * 0.055
+        .Width = Me.Width * 0.2
+        .Top = Me.Height * 0.15
+        .Left = Me.caja1.Left
+        .Font.Size = Me.Height * 0.03
+    End With
+    
+    With Me.Label1
+        .Height = Me.Height * 0.04
+        .Width = Me.caja1.Width * 0.3
+        .Top = Me.Height * 0.24
+        .Left = Me.caja1.Left
+        .Font.Size = Me.Height * 0.03
+        .Font.Bold = True
+    End With
+    
+    With Me.ComboBox1
+        .Height = Me.Height * 0.055
+        .Width = Me.Width * 0.4
+        .Top = Me.Height * 0.28
+        .Left = Me.caja1.Left
+        .Font.Size = Me.Height * 0.03
+    End With
+    
+    With Me.btMas
+        .Height = Me.Height * 0.05
+        .Width = Me.Width * 0.038
+        .Top = Me.Height * 0.15
+        .Left = Me.Width * 0.255
+        .Font.Size = Me.Height * 0.03
+    End With
+    
+    With Me.btMenos
+        .Height = Me.Height * 0.05
+        .Width = Me.Width * 0.038
+        .Top = Me.Height * 0.15
+        .Left = Me.Width * 0.31
+        .Font.Size = Me.Height * 0.03
+    End With
+    
+    With Me.Label2
+        .Height = Me.Height * 0.04
+        .Width = Me.caja1.Width * 0.3
+        .Top = Me.Height * 0.24
+        .Left = Me.Width * 0.48
+        .Font.Size = Me.Height * 0.03
+        .Font.Bold = True
+    End With
+    
+    With Me.TextBox1
+        .Height = Me.Height * 0.055
+        .Width = Me.Width * 0.08
+        .Top = Me.Height * 0.28
+        .Left = Me.Width * 0.48
+        .Font.Size = Me.Height * 0.03
+    End With
+    
+    With Me.CheckBox1
+        .Height = Me.Height * 0.04
+        .Width = Me.caja1.Width * 0.3
+        .Top = Me.Height * 0.28
+        .Left = Me.Width * 0.62
+        .Font.Size = Me.Height * 0.03
+        .Font.Bold = True
+    End With
+    
+    With Me.btAgregar
+        .Height = Me.Height * 0.1
+        .Width = Me.Width * 0.1
+        .Top = Me.Height * 0.4
+        .Left = Me.Width * 0.81
+    End With
+    
+    With Me.CommandButton1
+        .Height = Me.Height * 0.1
+        .Width = Me.Width * 0.1
+        .Top = Me.Height * 0.54
+        .Left = Me.Width * 0.81
+    End With
+    
+    With Me.closeButton
+        .Height = Me.Height * 0.1
+        .Width = Me.Width * 0.1
+        .Top = Me.Height * 0.75
+        .Left = Me.Width * 0.81
+    End With
+    
 End Sub
 
-Private Sub UserForm_initialize()
+Private Sub UserForm_Initialize()
     Dim rnge As Range, var As String
     Dim col As Long, row As Long
-    'Debug.Print modo
     
     currentDate = Date
+    Me.StartUpPosition = 0
     
-    Me.Top = Application.ActiveWindow.Top + Application.ActiveWindow.Height * 0.24
-    Me.Left = Application.ActiveWindow.Left + Application.ActiveWindow.Width * 0.3
-
+    Me.Height = Application.ActiveWindow.Height * 0.75
+    Me.Width = Application.ActiveWindow.Width * 0.6
+    Me.Top = Application.ActiveWindow.Top + Application.ActiveWindow.Height * 0.15
+    Me.Left = Application.ActiveWindow.Left + Application.ActiveWindow.Width * 0.2
+    
 '   COMBOBOX1
     With Me.ComboBox1
         Dim cell As Range
@@ -60,13 +229,6 @@ Private Sub UserForm_initialize()
     Set table = ws.ListObjects("DailyConsumption")
     'dog = table.range(table.ListRows.Count + 1, 1).Value
     'Debug.Print dog
-    
-    With Me.caja1
-        .ColumnCount = 4
-        .ColumnWidths = "50 ; 150 ; 60 ; 30"
-        .TextAlign = fmTextAlignCenter
-    
-    End With
 
 End Sub
 
@@ -194,3 +356,4 @@ Private Sub btMenos_click()
     currentDate = Me.ComboBox2.Value
     Me.ComboBox2 = currentDate - 1
 End Sub
+
