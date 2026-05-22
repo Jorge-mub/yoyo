@@ -7,7 +7,7 @@ Private Sub UserForm_Initialize()
     UserForm4.Label10.Visible = False
     UserForm4.Label11.Visible = False
     Me.numPO.Visible = False
-    
+
 '       ---------MULTIPAGE1---------
     With Me.MultiPage1
         .MultiRow = True
@@ -23,14 +23,14 @@ Private Sub UserForm_Initialize()
         .TextAlign = fmTextAlignCenter
         .Enabled = True
     End With
-    
+
     With Me.articulo
         Dim celda As Range
         Dim fin As Long
-        
+
         fin = Exist.ListObjects("tabExistencias").ListRows.Count + 1
         .Clear
-        
+
         For Each celda In ThisWorkbook.Sheets("Existencias").Range("D2:D" & fin)
             If Not IsEmpty(celda.Value) Then
                 .AddItem celda.Value
@@ -837,8 +837,8 @@ Private Sub MultiPage1_Change()
             Next k
         End If
         
-        Me.cmbFechaInicio.Value = "-"
-        Me.cmbFechaFin.Value = "-"
+        Me.cmbFechaInicio.Value = ""
+        Me.cmbFechaFin.Value = ""
         Me.txtBuscarArticulo.Value = ""
         Call FiltrarHistorial
     End If
@@ -869,6 +869,10 @@ Private Sub cmbFechaFin_Change()
 End Sub
 
 Sub FiltrarHistorial()
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    On Error GoTo ErrorHandler
+    
     Dim tbl As ListObject
     Dim datosTabla As Variant
     Dim i As Long, k As Long
@@ -878,11 +882,22 @@ Sub FiltrarHistorial()
     Dim artVal As String, tipoMov As String, condicionArt As String
     Dim fecVal As Date
     Dim pasaInicio As Boolean, pasaFin As Boolean, pasaTipo As Boolean
+    Dim fechaInicioDate As Date, fechaFinDate As Date
     
     Set tbl = consumo.ListObjects("DailyConsumption")
     artFiltro = UCase(Me.txtBuscarArticulo.Value)
     fecInicio = Me.cmbFechaInicio.Value
     fecFin = Me.cmbFechaFin.Value
+    
+    ' Convertir fechas una sola vez al inicio
+    On Error Resume Next
+    If fecInicio <> "-" And fecInicio <> "" And fecInicio <> "Todas" Then
+        fechaInicioDate = CDate(fecInicio)
+    End If
+    If fecFin <> "-" And fecFin <> "" And fecFin <> "Todas" Then
+        fechaFinDate = CDate(fecFin)
+    End If
+    On Error GoTo ErrorHandler
     
     Me.listBoxHistorial.Clear
     
@@ -899,68 +914,52 @@ Sub FiltrarHistorial()
             
             If cNuevo <> 0 Then
                 condicionArt = "Nuevo"
-                If cNuevo < 0 Then
-                    tipoMov = "Retiros"
-                    valMov = cNuevo 'Abs(cNuevo)
-                Else
-                    tipoMov = "Entradas"
-                    valMov = cNuevo
-                End If
+                tipoMov = IIf(cNuevo < 0, "Retiros", "Entradas")
+                valMov = cNuevo
             Else
                 condicionArt = "Reformulado"
-                If cRef < 0 Then
-                    tipoMov = "Retiros"
-                    valMov = cRef 'Abs(cRef)
-                Else
-                    tipoMov = "Entradas"
-                    valMov = cRef
-                End If
+                tipoMov = IIf(cRef < 0, "Retiros", "Entradas")
+                valMov = cRef
             End If
             
-            pasaTipo = False
-            If IsNull(Me.tglFiltroTipo.Value) Then
-                pasaTipo = True ' "Todo"
-            ElseIf Me.tglFiltroTipo.Value = True And tipoMov = "Retiros" Then
-                pasaTipo = True
-            ElseIf Me.tglFiltroTipo.Value = False And tipoMov = "Entradas" Then
-                pasaTipo = True
+            ' Validación de tipo
+            pasaTipo = IsNull(Me.tglFiltroTipo.Value) Or _
+                      (Me.tglFiltroTipo.Value = True And tipoMov = "Retiros") Or _
+                      (Me.tglFiltroTipo.Value = False And tipoMov = "Entradas")
+            
+            ' Validación de fecha - CORREGIDO
+            On Error Resume Next
+            fecVal = CDate(datosTabla(i, 5))
+            On Error GoTo ErrorHandler
+            
+            ' Validar fechas sin IsDate()
+            pasaInicio = True
+            pasaFin = True
+            
+            If fecInicio <> "-" And fecInicio <> "" And fecInicio <> "Todas" Then
+                pasaInicio = (fecVal >= fechaInicioDate)
             End If
             
-            If IsDate(datosTabla(i, 5)) Then
-                fecVal = CDate(datosTabla(i, 5))
-                
-                pasaInicio = False
-                If fecInicio = "Todas" Or fecInicio = "-" Or fecInicio = "" Then
-                    pasaInicio = True
-                ElseIf IsDate(fecInicio) Then
-                    If fecVal >= CDate(fecInicio) Then pasaInicio = True
-                End If
-                
-                pasaFin = False
-                If fecFin = "Todas" Or fecFin = "-" Or fecFin = "" Then
-                    pasaFin = True
-                ElseIf IsDate(fecFin) Then
-                    If fecVal <= CDate(fecFin) Then pasaFin = True
-                End If
-                
-                If (artFiltro = "" Or InStr(artVal, artFiltro) > 0) And pasaInicio And pasaFin And pasaTipo Then
-                    arr(k, 1) = datosTabla(i, 5)
-                    arr(k, 2) = datosTabla(i, 1)
-                    If tipoMov = "Retiros" Then
-                        arr(k, 3) = "Descuento"
-                    Else
-                        arr(k, 3) = "Entrada"
-                    End If
-                    arr(k, 4) = condicionArt
-                    arr(k, 5) = valMov
-                    k = k + 1
-                End If
+            If fecFin <> "-" And fecFin <> "" And fecFin <> "Todas" Then
+                pasaFin = (fecVal <= fechaFinDate)
+            End If
+            
+            ' Aplicar filtro de artículo
+            If (artFiltro = "" Or InStr(artVal, artFiltro) > 0) And pasaInicio And pasaFin And pasaTipo Then
+                arr(k, 1) = datosTabla(i, 5)
+                arr(k, 2) = datosTabla(i, 1)
+                arr(k, 3) = IIf(tipoMov = "Retiros", "Descuento", "Entrada")
+                arr(k, 4) = condicionArt
+                arr(k, 5) = valMov
+                k = k + 1
             End If
         Next i
         
+        ' Asignar al ListBox solo al final
         If k > 1 Then
             Dim finalArr() As Variant
             ReDim finalArr(1 To k - 1, 1 To 5)
+            
             For i = 1 To k - 1
                 finalArr(i, 1) = arr(i, 1)
                 finalArr(i, 2) = arr(i, 2)
@@ -980,6 +979,15 @@ Sub FiltrarHistorial()
             End With
         End If
     End If
+    
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Exit Sub
+    
+ErrorHandler:
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    MsgBox "Error en FiltrarHistorial: " & Err.Description, vbExclamation
 End Sub
 
 Private Sub btnLimpiarFiltros_Click()
