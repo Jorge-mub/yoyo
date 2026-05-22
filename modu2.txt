@@ -54,9 +54,9 @@ Public Sub elementosPageDetalles(frm As Object)
     bloque2yy = frm.Height * 0.195
     bloque3yy = frm.Height * 0.302
     
-    bloque1x = frm.Width * 0.078
-    bloque2x = frm.Width * 0.35
-    bloque3x = frm.Width * 0.58
+    bloque1x = frm.Width * 0.065
+    bloque2x = frm.Width * 0.315
+    bloque3x = frm.Width * 0.505
     
     altura = frm.Height * 0.033
     ancho = frm.Width * 0.1
@@ -202,7 +202,7 @@ Public Sub elementosPageDetalles(frm As Object)
     
     With frm.TextBox6
         .Height = altura2
-        .Width = frm.Label16.Width
+        .Width = frm.Label16.Width * 0.8
         .Top = frm.Label16.Top + frm.Label16.Height
         .Left = bloque3x
         .Font.Size = letra
@@ -214,7 +214,7 @@ Public Sub elementosPageDetalles(frm As Object)
     
     With frm.TextBox7
         .Height = altura2
-        .Width = frm.Label16.Width
+        .Width = frm.Label16.Width * 0.8
         .Top = frm.Label17.Top + frm.Label17.Height
         .Left = bloque3x
         .Font.Size = letra
@@ -226,7 +226,7 @@ Public Sub elementosPageDetalles(frm As Object)
     
     With frm.TextBox8
         .Height = altura2
-        .Width = frm.Label16.Width
+        .Width = frm.Label16.Width * 0.8
         .Top = frm.Label18.Top + frm.Label18.Height
         .Left = bloque3x
         .Font.Size = letra
@@ -255,19 +255,58 @@ Public Sub elementosPageDetalles(frm As Object)
         .Left = 0
         .Font.Size = letra
     End With
-    
+   
+'   ========================================================
     With frm.ListBox2
         .Height = frm.Height * 0.75
-        .Width = frm.Width * 0.25
-        .Top = frm.Height * 0.085
-        .Left = frm.Width * 0.7
-        .ColumnCount = 3
+        .Width = frm.Width * 0.3475
+        .Top = frm.TextBox6.Top
+        .Left = frm.Width * 0.605
+        .ColumnCount = 4
         .Font.Size = 12
-        .ColumnWidths = frm.ListBox2.Width * 0.4 & ";" & _
-        frm.ListBox2.Width * 0.15 & ";" & frm.ListBox2.Width * 0.4
-        .TextAlign = fmTextAlignCenter
+        .ColumnWidths = frm.ListBox2.Width * 0.26 & ";" & _
+                        frm.ListBox2.Width * 0.3 & ";" & _
+                        frm.ListBox2.Width * 0.28 & ";" & _
+                        frm.ListBox2.Width * 0.15
+        .TextAlign = fmTextAlignLeft
     End With
     
+    With frm.Label28
+        .Height = frm.Height * 0.041
+        .Width = frm.ListBox2.Width * 0.26
+        .Top = bloque1y
+        .Left = frm.ListBox2.Left
+        .Caption = "Fecha"
+        .Font.Size = frm.Height * 0.029
+    End With
+    
+    With frm.Label29
+        .Height = frm.Height * 0.041
+        .Width = frm.ListBox2.Width * 0.3
+        .Top = bloque1y
+        .Left = frm.ListBox2.Left + frm.Label28.Width
+        .Caption = "Condición"
+        .Font.Size = frm.Height * 0.029
+    End With
+    
+    With frm.Label30
+        .Height = frm.Height * 0.041
+        .Width = frm.ListBox2.Width * 0.28
+        .Top = bloque1y
+        .Left = frm.Label29.Left + frm.Label29.Width
+        .Caption = "Código"
+        .Font.Size = frm.Height * 0.029
+    End With
+    
+    With frm.Label31
+        .Height = frm.Height * 0.041
+        .Width = frm.ListBox2.Width * 0.16
+        .Top = bloque1y
+        .Left = frm.Label30.Left + frm.Label30.Width
+        .Caption = "QYT"
+        .Font.Size = frm.Height * 0.029
+    End With
+'   ========================================================
     With frm.ListBox3
         .Height = frm.Height * 0.25
         .Width = frm.Width * 0.5
@@ -311,44 +350,39 @@ Public Sub plantilla(frm As Object)
         '======================= LISTBOXES =======================
         frm.ListBox2.Clear
         ultfila2 = consumo.ListObjects("DailyConsumption").ListRows.Count + 2
-        Set fila2 = consumo.Range("A2:A" & ultfila2).Find(item, LookIn:=xlValues)
+        Set fila2 = consumo.Range("A2:A" & ultfila2).Find(item, LookIn:=xlValues, searchdirection:=xlPrevious)
         
         If Not fila2 Is Nothing Then 'Or fila2.Value <> "" Then
         
             alpha = Trim(Replace(fila2.Address, "$A$", Delete))
             primero = fila2.Address
             
-            ReDim vector(1 To ultFila, 1 To 3)
+            ReDim vector(1 To ultFila, 1 To 4)
             contador = 1
             
             vector(1, 1) = consumo.Range("E" & alpha).Value
-            
-            If consumo.Range("C" & alpha) <> "" Then
-                vector(1, 2) = consumo.Range("C" & alpha).Value
-                vector(1, 3) = "Nuevo"
-            Else
-                vector(1, 2) = consumo.Range("D" & alpha).Value
-                vector(1, 3) = "Reformulado"
-            End If
+            vector(1, 2) = consumo.Range("B" & alpha).Value
+            vector(1, 3) = consumo.Range("C" & alpha).Value
+            vector(1, 4) = consumo.Range("D" & alpha).Value
             
             Do
-                Set fila2 = consumo.Range("A2:A" & ultfila2).FindNext(fila2)
+                Set fila2 = consumo.Range("A2:A" & ultfila2).FindPrevious(fila2)
                 If fila2.Address <> primero Then
                     alpha = Trim(Replace(fila2.Address, "$A$", Delete))
                     contador = contador + 1
                     vector(contador, 1) = consumo.Range("E" & alpha).Value
-                    If consumo.Range("C" & alpha) <> "" Then
-                        vector(contador, 2) = consumo.Range("C" & alpha).Value
-                        vector(contador, 3) = "Nuevo"
+                    vector(contador, 2) = consumo.Range("B" & alpha).Value
+                    vector(contador, 3) = consumo.Range("C" & alpha).Value
+                    If Not consumo.Range("D" & alpha).Value Like "-*" Then
+                        vector(contador, 4) = " " & consumo.Range("D" & alpha).Value
                     Else
-                        vector(contador, 2) = consumo.Range("D" & alpha).Value
-                        vector(contador, 3) = "Reformulado"
+                        vector(contador, 4) = consumo.Range("D" & alpha).Value
                     End If
                End If
             Loop While fila2.Address <> primero
             
             vector = Application.Transpose(vector)
-            ReDim Preserve vector(1 To 3, 1 To contador + 1)
+            ReDim Preserve vector(1 To 4, 1 To contador + 1)
             vector = Application.Transpose(vector)
             frm.ListBox2.List = vector
         Else
