@@ -1,5 +1,3 @@
-'=== mod ===
-
 Public Sub labelsTamano(frm As Object)
     frm.lblDesc.Visible = True
     frm.lblCons.Visible = False
@@ -7,12 +5,16 @@ Public Sub labelsTamano(frm As Object)
     frm.lblStock2.Visible = True
     frm.lblStock3.Visible = True
     
-    frm.ListBox1.ColumnWidths = frm.ListBox1.Width * 0.35 & ";" & frm.ListBox1.Width * 0.39 & ";" & frm.ListBox1.Width * 0.095 & ";" & frm.ListBox1.Width * 0.08 & ";" & frm.ListBox1.Width * 0.08
+    frm.ListBox1.ColumnWidths = frm.ListBox1.Width * 0.35 & ";" & _
+                                frm.ListBox1.Width * 0.39 & ";" & _
+                                frm.ListBox1.Width * 0.095 & ";" & _
+                                frm.ListBox1.Width * 0.08 & ";" & _
+                                frm.ListBox1.Width * 0.08
+    
     frm.lblArt.Width = frm.ListBox1.Width * 0.35
     frm.lblDesc.Width = frm.ListBox1.Width * 0.39
     frm.lblDesc.Left = frm.ListBox1.Left + frm.lblArt.Width
     
-'   ---------LABEL STOCK 1---------
     With frm.lblStock1
         .Height = frm.Height * 0.041
         .Width = frm.ListBox1.Width * 0.1
@@ -21,7 +23,6 @@ Public Sub labelsTamano(frm As Object)
         .Font.Size = frm.Height * 0.029
     End With
 
-'   ---------LABEL STOCK 2---------
     With frm.lblStock2
         .Height = frm.Height * 0.041
         .Width = frm.ListBox1.Width * 0.08
@@ -30,7 +31,6 @@ Public Sub labelsTamano(frm As Object)
         .Font.Size = frm.Height * 0.029
     End With
 
-'   ---------LABEL STOCK 3---------
     With frm.lblStock3
         .Height = frm.Height * 0.041
         .Width = frm.ListBox1.Width * 0.08
@@ -66,7 +66,6 @@ Public Sub elementosPageDetalles(frm As Object)
     
     letra = frm.Height * 0.025
 
-'   ============================== LABELS ==============================
     With frm.Label11
         .Height = altura
         .Width = ancho
@@ -102,7 +101,7 @@ Public Sub elementosPageDetalles(frm As Object)
     With frm.Label15
         .Height = altura
         .Width = ancho
-        .Top = bloque1y 'bloque3y * 1.13
+        .Top = bloque1y
         .Left = bloque2x
         .Font.Size = letra
     End With
@@ -139,7 +138,6 @@ Public Sub elementosPageDetalles(frm As Object)
         .Font.Size = letra
     End With
 
-'   ============================== TEXTBOX ==============================
     With frm.TextBox1
         .Height = altura2 * 2.4
         .Width = ancho2 * 1.35
@@ -256,7 +254,6 @@ Public Sub elementosPageDetalles(frm As Object)
         .Font.Size = letra
     End With
    
-'   ========================================================
     With frm.ListBox2
         .Height = frm.Height * 0.75
         .Width = frm.Width * 0.3475
@@ -306,7 +303,7 @@ Public Sub elementosPageDetalles(frm As Object)
         .Caption = "QYT"
         .Font.Size = frm.Height * 0.029
     End With
-'   ========================================================
+
     With frm.ListBox3
         .Height = frm.Height * 0.25
         .Width = frm.Width * 0.5
@@ -347,13 +344,11 @@ Public Sub plantilla(frm As Object)
         frm.TextBox8.Value = Exist.Range("J" & delta).Value
         frm.TextBox9.Value = Exist.Range("O" & delta).Value
         
-        '======================= LISTBOXES =======================
         frm.ListBox2.Clear
         ultfila2 = consumo.ListObjects("DailyConsumption").ListRows.Count + 2
-        Set fila2 = consumo.Range("A2:A" & ultfila2).Find(item, LookIn:=xlValues, searchdirection:=xlPrevious)
+        Set fila2 = consumo.Range("A2:A" & ultfila2).Find(item, LookIn:=xlValues, SearchDirection:=xlPrevious)
         
-        If Not fila2 Is Nothing Then 'Or fila2.Value <> "" Then
-        
+        If Not fila2 Is Nothing Then
             alpha = Trim(Replace(fila2.Address, "$A$", Delete))
             primero = fila2.Address
             
@@ -378,7 +373,7 @@ Public Sub plantilla(frm As Object)
                     Else
                         vector(contador, 4) = consumo.Range("D" & alpha).Value
                     End If
-               End If
+                End If
             Loop While fila2.Address <> primero
             
             vector = Application.Transpose(vector)
