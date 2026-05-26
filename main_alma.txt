@@ -1250,31 +1250,32 @@ Private Sub boton2_click()
     Dim nombre As String
     Dim wb As Workbook
     
-    On Error Resume Next
     Application.ScreenUpdating = False
     Application.Calculation = xlCalculationManual
     
     nombre = Application.InputBox("File name?", Type:=2)
-    If nombre <> "Falso" And nombre <> "False" Then
+    If nombre <> "Falso" And nombre <> "False" And nombre <> "" Then
         Workbooks.Add.SaveAs Filename:=nombre
-        Set wb = Workbooks(nombre & ".xlsx")
+        Set wb = ActiveWorkbook
+    Else
+        GoTo Salida
     End If
     
     fila = Exist.Range("A" & Exist.Rows.Count).End(xlUp).row
     datosOrigen = Exist.Range("A1:J" & fila).Value
-    ReDim datosResultado(0 To UBound(datosOrigen, 1), 1 To 10)
-    n = 0
+    ReDim datosResultado(1 To UBound(datosOrigen, 1), 1 To 10)
+    n = 1
     
-    datosResultado(0, 1) = "Tipo"
-    datosResultado(0, 2) = "Maquina"
-    datosResultado(0, 3) = "Proveedor"
-    datosResultado(0, 4) = "Artículo"
-    datosResultado(0, 5) = "Descripción"
-    datosResultado(0, 6) = "Grupo"
-    datosResultado(0, 7) = "Tamaño"
-    datosResultado(0, 8) = "Existencias Nuevo"
-    datosResultado(0, 9) = "Existencias Reformulado"
-    datosResultado(0, 10) = "Stock total"
+    datosResultado(n, 1) = "Tipo"
+    datosResultado(n, 2) = "Maquina"
+    datosResultado(n, 3) = "Proveedor"
+    datosResultado(n, 4) = "Artículo"
+    datosResultado(n, 5) = "Descripción"
+    datosResultado(n, 6) = "Grupo"
+    datosResultado(n, 7) = "Tamaño"
+    datosResultado(n, 8) = "Existencias Nuevo"
+    datosResultado(n, 9) = "Existencias Reformulado"
+    datosResultado(n, 10) = "Stock total"
     
     For i = 2 To UBound(datosOrigen, 1)
         If datosOrigen(i, 10) = 0 And Not IsEmpty(datosOrigen(i, 10)) Then
@@ -1285,21 +1286,30 @@ Private Sub boton2_click()
         End If
     Next i
     
-    If n > 0 Then
+    If n > 1 Then
         wb.Sheets(1).Cells.ClearContents
         wb.Sheets(1).Range("A1").Resize(n, 10).Value = datosResultado
         wb.Sheets(1).Cells.WrapText = False
-        'wb.Sheets(1).Cells.AutoSize = True
-        'For i = 1 To 10
-        '    wb.Sheets(1).Cells(1, i).Interior.Color = RGB(215, 215, 0)
-        'Next i
-        
+        wb.Sheets(1).Columns("A:J").AutoFit
+        wb.Sheets(1).Columns("C").ColumnWidth = 13
+        wb.Sheets(1).Range("A1:J1").Interior.Color = RGB(255, 215, 0)
+        wb.Sheets(1).Range("A1:J" & n).VerticalAlignment = xl
+        wb.Sheets(1).Range("A1:J" & n).HorizontalAlignment = xlCenter
+        wb.Sheets(1).Range("D1:F" & n).HorizontalAlignment = xlLeft
+        wb.Sheets(1).Range("B1:B" & n).HorizontalAlignment = xlLeft
+        wb.Sheets(1).Range("A1:J1").Font.Bold = True
+        With wb.Sheets(1).Range("A1:J" & n).Font
+            .Name = Bierstadt
+            .Size = 12
+        End With
     End If
     
+Salida:
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
-    On Error GoTo 0
+    Unload Me
 End Sub
+
 
 Private Sub btVolver789_click()
     Me.MultiPage1.Pages(3).Visible = False
