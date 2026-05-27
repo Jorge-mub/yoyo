@@ -354,6 +354,14 @@ Private Sub UserForm_Activate()
         .TripleState = True
     End With
     
+    With Me.btnAcumulado
+        .Height = Me.Height * 0.06
+        .Width = Me.Width * 0.1
+        .Top = Me.Height * 0.05
+        .Left = Me.Width * 0.4
+        .Font.Size = .Height * 0.46
+    End With
+    
     With Me.txtBuscarArticulo
         .Height = Me.Height * 0.06
         .Width = Me.Width * 0.2
@@ -501,6 +509,7 @@ Private Sub UserForm_Activate()
         .Left = Me.Width * 0.58
         .Font.Size = .Height * 0.46
     End With
+    
 End Sub
 
 Private Sub CommandButtonClose_Click()
@@ -1245,7 +1254,7 @@ End Sub
 Private Sub boton2_click()
     Dim datosOrigen As Variant
     Dim datosResultado() As Variant
-    Dim i As Long, j As Long, n As Long
+    Dim i As Long, n As Long
     Dim fila As Long
     Dim nombre As String
     Dim wb As Workbook
@@ -1262,44 +1271,44 @@ Private Sub boton2_click()
     End If
     
     fila = Exist.Range("A" & Exist.Rows.Count).End(xlUp).row
-    datosOrigen = Exist.Range("A1:J" & fila).Value
-    ReDim datosResultado(1 To UBound(datosOrigen, 1), 1 To 10)
+    datosOrigen = Exist.Range("A1:O" & fila).Value
+    ReDim datosResultado(1 To UBound(datosOrigen, 1), 1 To 6)
     n = 1
     
-    datosResultado(n, 1) = "Tipo"
-    datosResultado(n, 2) = "Maquina"
-    datosResultado(n, 3) = "Proveedor"
-    datosResultado(n, 4) = "Artículo"
-    datosResultado(n, 5) = "Descripción"
-    datosResultado(n, 6) = "Grupo"
-    datosResultado(n, 7) = "Tamaño"
-    datosResultado(n, 8) = "Existencias Nuevo"
-    datosResultado(n, 9) = "Existencias Reformulado"
-    datosResultado(n, 10) = "Stock total"
+    datosResultado(n, 1) = datosOrigen(1, 14)
+    datosResultado(n, 2) = datosOrigen(1, 15)
+    datosResultado(n, 3) = datosOrigen(1, 4)
+    datosResultado(n, 4) = datosOrigen(1, 5)
+    datosResultado(n, 5) = datosOrigen(1, 10)
+    datosResultado(n, 6) = datosOrigen(1, 13)
     
     For i = 2 To UBound(datosOrigen, 1)
         If datosOrigen(i, 10) = 0 And Not IsEmpty(datosOrigen(i, 10)) Then
             n = n + 1
-            For j = 1 To 10
-                datosResultado(n, j) = datosOrigen(i, j)
-            Next j
+            datosResultado(n, 1) = datosOrigen(i, 14)
+            datosResultado(n, 2) = datosOrigen(i, 15)
+            datosResultado(n, 3) = datosOrigen(i, 4)
+            datosResultado(n, 4) = datosOrigen(i, 5)
+            datosResultado(n, 5) = datosOrigen(i, 10)
+            datosResultado(n, 6) = datosOrigen(i, 13)
         End If
     Next i
     
     If n > 1 Then
         wb.Sheets(1).Cells.ClearContents
-        wb.Sheets(1).Range("A1").Resize(n, 10).Value = datosResultado
+        wb.Sheets(1).Range("A1").Resize(n, 6).Value = datosResultado
         wb.Sheets(1).Cells.WrapText = False
-        wb.Sheets(1).Columns("A:J").AutoFit
-        wb.Sheets(1).Columns("C").ColumnWidth = 13
-        wb.Sheets(1).Range("A1:J1").Interior.Color = RGB(255, 215, 0)
-        wb.Sheets(1).Range("A1:J" & n).VerticalAlignment = xl
-        wb.Sheets(1).Range("A1:J" & n).HorizontalAlignment = xlCenter
-        wb.Sheets(1).Range("D1:F" & n).HorizontalAlignment = xlLeft
-        wb.Sheets(1).Range("B1:B" & n).HorizontalAlignment = xlLeft
-        wb.Sheets(1).Range("A1:J1").Font.Bold = True
-        With wb.Sheets(1).Range("A1:J" & n).Font
-            .Name = Bierstadt
+        wb.Sheets(1).Columns("A:F").AutoFit
+        wb.Sheets(1).Columns("F").ColumnWidth = 9
+        wb.Sheets(1).Cells(1, 5).Value = "QTY"
+        wb.Sheets(1).Range("A1:F1").Interior.Color = RGB(255, 215, 0)
+        wb.Sheets(1).Range("A1:F" & n).VerticalAlignment = xlCenter
+        wb.Sheets(1).Range("A1:F" & n).HorizontalAlignment = xlCenter
+        wb.Sheets(1).Range("C1:D" & n).HorizontalAlignment = xlLeft
+        wb.Sheets(1).Range("A1:F1").Font.Bold = True
+        wb.Sheets(1).Range("F2:F" & n).NumberFormat = "$#,##0.00"
+        With wb.Sheets(1).Range("A1:F" & n).Font
+            .Name = "Bierstadt"
             .Size = 12
         End With
     End If
@@ -1373,4 +1382,6 @@ Sub CargarMesesAcumulado()
     Me.cmbMesInicioAcum.Value = "Todas"
     Me.cmbMesFinAcum.Value = "Todas"
 End Sub
+
+
 
