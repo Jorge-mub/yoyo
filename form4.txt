@@ -357,6 +357,14 @@ Private Sub UserForm_Activate()
         .Font.Size = Me.Height * 0.025
     End With
     
+    With Me.btnEliminar
+        .Height = Me.Height * 0.055
+        .Width = Me.Width * 0.08
+        .Top = Me.CheckBox1.Top
+        .Left = Me.cmbFiltroGrupo.Left
+        .Font.Size = Me.Height * 0.025
+    End With
+    
     With Me.closeButton
         .Height = Me.Height * 0.055
         .Width = Me.Width * 0.08
