@@ -1,5 +1,9 @@
 Private bloqueaEventos As Boolean
 
+Private Sub labEnt_Click()
+
+End Sub
+
 Private Sub UserForm_Initialize()
     Dim i As Integer, totalWidth As String
     Dim j As Integer, totalWidth2 As String
@@ -478,12 +482,57 @@ Private Sub UserForm_Activate()
     End With
     
     With Me.listBoxAcumulado
-        .Top = Me.listBoxHistorial.Top
-        .Left = Me.listBoxHistorial.Left
         .Height = Me.listBoxHistorial.Height
         .Width = Me.listBoxHistorial.Width
+        .Top = Me.listBoxHistorial.Top
+        .Left = Me.listBoxHistorial.Left
         .TextAlign = fmTextAlignCenter
         .Font.Size = .Height * 0.045
+    End With
+
+    With Me.labFe
+        .Height = Me.Height * 0.041
+        .Width = Me.listBoxAcumulado.Width * 0.11
+        .Top = Me.listBoxAcumulado.Top - .Height
+        .Left = Me.Width * 0.03
+        .Caption = "Fecha"
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+    With Me.labArt
+        .Height = Me.Height * 0.041
+        .Width = Me.listBoxAcumulado.Width * 0.5
+        .Top = Me.listBoxAcumulado.Top - .Height
+        .Left = Me.labFe.Left + Me.labFe.Width
+        .Caption = "Artículo"
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+    With Me.labRef
+        .Height = Me.Height * 0.041
+        .Width = Me.listBoxAcumulado.Width * 0.15
+        .Top = Me.listBoxAcumulado.Top - .Height
+        .Left = Me.labArt.Left + Me.labArt.Width
+        .Caption = "Reformulados"
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+    With Me.labNu
+        .Height = Me.Height * 0.041
+        .Width = Me.listBoxAcumulado.Width * 0.15
+        .Top = Me.listBoxAcumulado.Top - .Height
+        .Left = Me.labRef.Left + Me.labRef.Width
+        .Caption = "Nuevos"
+        .Font.Size = Me.Height * 0.029
+    End With
+    
+    With Me.labEnt
+        .Height = Me.Height * 0.041
+        .Width = Me.listBoxAcumulado.Width * 0.08
+        .Top = Me.listBoxAcumulado.Top - .Height
+        .Left = Me.labNu.Left + Me.labNu.Width
+        .Caption = "Entradas"
+        .Font.Size = Me.Height * 0.029
     End With
     
     With Me.txtBuscarArtAcum
@@ -752,11 +801,21 @@ Private Sub btnAcumulado_Click()
         Me.cmbFechaFin.Visible = False
         Me.btnLimpiarFiltros.Visible = False
         Me.tglFiltroTipo.Visible = False
+        Me.Label19.Visible = False
+        Me.Label20.Visible = False
+        Me.Label21.Visible = False
+        Me.Label22.Visible = False
+        Me.Label23.Visible = False
         
         Me.listBoxAcumulado.Visible = True
         Me.txtBuscarArtAcum.Visible = True
         Me.cmbMesInicioAcum.Visible = True
         Me.cmbMesFinAcum.Visible = True
+        Me.labFe.Visible = True
+        Me.labArt.Visible = True
+        Me.labRef.Visible = True
+        Me.labNu.Visible = True
+        Me.labEnt.Visible = True
         
         Call CargarFechasPorAnio
         Call FiltrarAcumulado
@@ -767,11 +826,21 @@ Private Sub btnAcumulado_Click()
         Me.cmbFechaFin.Visible = True
         Me.btnLimpiarFiltros.Visible = True
         Me.tglFiltroTipo.Visible = True
+        Me.Label19.Visible = True
+        Me.Label20.Visible = True
+        Me.Label21.Visible = True
+        Me.Label22.Visible = True
+        Me.Label23.Visible = True
         
         Me.listBoxAcumulado.Visible = False
         Me.txtBuscarArtAcum.Visible = False
         Me.cmbMesInicioAcum.Visible = False
         Me.cmbMesFinAcum.Visible = False
+        Me.labFe.Visible = False
+        Me.labArt.Visible = False
+        Me.labRef.Visible = False
+        Me.labNu.Visible = False
+        Me.labEnt.Visible = False
         
         Call CargarFechasPorAnio
         Call FiltrarHistorial
@@ -1017,7 +1086,11 @@ Sub FiltrarHistorial()
         Next j
         With Me.listBoxHistorial
             .ColumnCount = 5
-            .ColumnWidths = .Width * 0.11 & ";" & .Width * 0.5 & ";" & .Width * 0.15 & ";" & .Width * 0.15 & ";" & .Width * 0.08
+            .ColumnWidths = .Width * 0.11 & ";" & _
+                            .Width * 0.5 & ";" & _
+                            .Width * 0.15 & ";" & _
+                            .Width * 0.15 & ";" & _
+                            .Width * 0.08
             .List = finalArr
         End With
     End If
@@ -1155,7 +1228,11 @@ Sub FiltrarAcumulado()
         
         With Me.listBoxAcumulado
             .ColumnCount = 5
-            .ColumnWidths = .Width * 0.11 & ";" & .Width * 0.5 & ";" & .Width * 0.15 & ";" & .Width * 0.15 & ";" & .Width * 0.08
+            .ColumnWidths = .Width * 0.11 & ";" & _
+                            .Width * 0.5 & ";" & _
+                            .Width * 0.15 & ";" & _
+                            .Width * 0.15 & ";" & _
+                            .Width * 0.08
             .List = finalArr
         End With
     End If
@@ -1249,6 +1326,7 @@ End Sub
 
 Private Sub btLimpiarArtH_Click()
     Me.txtBuscarArticulo.Value = ""
+    Me.txtBuscarArtAcum.Value = ""
 End Sub
 
 Private Sub boton2_click()
@@ -1256,16 +1334,17 @@ Private Sub boton2_click()
     Dim datosResultado() As Variant
     Dim i As Long, n As Long
     Dim fila As Long
-    Dim nombre As String
+    Dim nombre As Variant
     Dim wb As Workbook
     
     Application.ScreenUpdating = False
     Application.Calculation = xlCalculationManual
     
-    nombre = Application.InputBox("File name?", Type:=2)
-    If nombre <> "Falso" And nombre <> "False" And nombre <> "" Then
-        Workbooks.Add.SaveAs Filename:=nombre
-        Set wb = ActiveWorkbook
+    nombre = Application.GetSaveAsFilename(FileFilter:="Libro de Excel (*.xlsx), *.xlsx")
+    
+    If nombre <> False Then
+        Set wb = Workbooks.Add
+        wb.SaveAs Filename:=nombre
     Else
         GoTo Salida
     End If
@@ -1318,7 +1397,6 @@ Salida:
     Application.Calculation = xlCalculationAutomatic
     Unload Me
 End Sub
-
 
 Private Sub btVolver789_click()
     Me.MultiPage1.Pages(3).Visible = False
