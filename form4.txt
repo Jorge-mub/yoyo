@@ -349,7 +349,7 @@ Private Sub UserForm_Activate()
         .Font.Size = Me.Height * 0.025
     End With
     
-    With Me.CommandButton1
+    With Me.btnEliminar
         .Height = Me.Height * 0.055
         .Width = Me.Width * 0.08
         .Top = Me.CheckBox1.Top
@@ -357,7 +357,7 @@ Private Sub UserForm_Activate()
         .Font.Size = Me.Height * 0.025
     End With
     
-    With Me.btnEliminar
+    With Me.CommandButton1
         .Height = Me.Height * 0.055
         .Width = Me.Width * 0.08
         .Top = Me.CheckBox1.Top
@@ -369,7 +369,7 @@ Private Sub UserForm_Activate()
         .Height = Me.Height * 0.055
         .Width = Me.Width * 0.08
         .Top = Me.CheckBox1.Top
-        .Left = Me.Width * 0.81
+        .Left = Me.Width * 0.85
     End With
 End Sub
 Private Sub btAgregar_Click()
