@@ -767,12 +767,13 @@ Private Sub ordenesDeCompra()
     Me.opListB.List = dict.keys
     
     With Me.opListB
-        .ColumnCount = 2
-        .ColumnWidths = 250
         .Height = Me.Height * 0.6
         .Width = Me.Width * 0.9
         .Top = Me.Height * 0.2
         .Left = Me.Width * 0.02
+        .ColumnCount = 2
+        .ColumnWidths = .Width * 0.5 & ";" & .Width * 0.5
+        '.TextAlign = fmTextAlignCenter
     End With
 End Sub
 
